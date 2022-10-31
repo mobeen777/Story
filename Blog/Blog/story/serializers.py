@@ -5,12 +5,12 @@ from .models import *
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = "__all__"
+        fields = '__all__'
 
 
 class StoryImageSerializer(serializers.ModelSerializer):
-    images = ImageSerializer(many=True)
+    story = ImageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Story
-        fields = "__all__"
+        fields = ['id', 'title', 'details', 'story']

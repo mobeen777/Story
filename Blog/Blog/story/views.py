@@ -11,16 +11,16 @@ class StoryViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = Story.objects.all()
-        serializer = StoryImageSerializer(queryset, many=True)
+        serializer = StoryImageSerializer(queryset, many=True, context={'request': request})
         return Response({"News": serializer.data}, status=200)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
+        serializer = self.get_serializer(instance, context={'request': request})
         return Response({"News": serializer.data}, status=200)
 
     def create(self, request, *args, **kwargs):
-        serializer = StoryImageSerializer(data=request.data, partial=True)
+        serializer = StoryImageSerializer(data=request.data, partial=True, context={'request': request})
         if serializer.is_valid():
             serializer_ = serializer.save()
 
@@ -28,14 +28,14 @@ class StoryViewSet(viewsets.ModelViewSet):
             img = ImageSerializer(data={"image": image})
             if img.is_valid():
                 img = img.save()
-                serializer_.images.add(img)
+                serializer_.story.add(img)
         serializer_.save()
 
         return Response({"News": serializer.data}, status=201)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(instance, data=request.data, partial=True, context={'request': request})
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 

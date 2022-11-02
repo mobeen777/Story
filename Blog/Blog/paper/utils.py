@@ -1,4 +1,6 @@
 import re
+import docx2txt
+from .models import *
 from .constants import (PAPER_TOPIC_PATTERN, PAPER_MARKS_PATTERN, TOTAL_TIME_PATTERN, QUESTION_TYPE_PATTERN,
                         SECTION_MARKS_PATTERN, SECTION_TOPIC_PATTERN, MCQ_SECTION_PATTERN, CRQ_SECTION_PATTERN,
                         ERQ_SECTION_PATTERN)
@@ -87,7 +89,10 @@ def erq_question(text):
     erq = [i for i in erq if i]
 
     all_erq = []
-    for question_no in range(2, len(erq)):
+    question_no = 2
+    # for question_no in range(2, len(erq)):
+    while question_no < len(erq):
+        print(question_no, 2)
         if question_no == len(erq) - 1:
             if erq[question_no].find('Topic: ') == -1:
                 all_erq.append(erq[question_no])
@@ -98,9 +103,10 @@ def erq_question(text):
             erq[question_no] = erq[question_no] + erq[question_no + 1]
             all_erq.append(erq[question_no])
             question_no += 1
+            print(question_no, 1)
         else:
             all_erq.append(erq[question_no])
-
+        question_no += 1
     return all_erq
 
 
@@ -116,3 +122,38 @@ def parsed_data(text):
             'mcq': mcq,
             'crq': crq,
             'erq': erq}
+
+
+def save_paper(paper_docx):
+    text = docx2txt.process(paper_docx)
+    paper = parsed_data(text)
+    paper_object = Paper.objects.create(paper_topic=paper["paper_detail"]["topic"],
+                                        total_marks=paper["paper_detail"]["total_marks"],
+                                        total_section=len(paper["section_detail"]),
+                                        total_time=paper["paper_detail"]["total_time"])
+    for section in paper["section_detail"]:
+        section_object = Section.objects.create(paper=paper_object, section_topic=section["section_topic"],
+                                                question_type=section["question_type"],
+                                                section_marks=section["section_marks"]
+                                                )
+        if section["question_type"] == "MCQs":
+            for mcq in paper["mcq"]:
+                question_object = Question.objects.create(section=section_object,
+                                                          question_statement=mcq["question"])
+
+                for option in mcq["option"]:
+                    option_object = Option.objects.create(question=question_object, option=option[0],
+                                                          is_true=option[1])
+                    option_object.save()
+                question_object.save()
+        if section["question_type"] == "CRQ":
+            for crq in paper["crq"]:
+                question_object = Question.objects.create(section=section_object, question_statement=crq)
+                question_object.save()
+        if section["question_type"] == "ERQ":
+            for erq in paper["erq"]:
+                question_object = Question.objects.create(section=section_object, question_statement=erq)
+                question_object.save()
+
+        section_object.save()
+    paper_object.save()

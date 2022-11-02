@@ -5,7 +5,5 @@ from .models import *
 
 admin.site.register(Paper)
 admin.site.register(Section)
-admin.site.register(MCQ)
-admin.site.register(MCQOption)
-admin.site.register(CRO)
-admin.site.register(ERQ)
+admin.site.register(Question)
+admin.site.register(Option)

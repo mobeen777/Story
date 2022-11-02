@@ -18,12 +18,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
-from story import views
+from story.views import *
+from paper.views import *
+
 
 router = DefaultRouter()
 
 
-router.register('story', views.StoryViewSet, basename='story')
+router.register('story', StoryViewSet, basename='story')
+router.register('paper', PaperViewset, basename='story')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

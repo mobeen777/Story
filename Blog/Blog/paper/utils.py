@@ -13,11 +13,9 @@ def topic_marks_time(text):
     time = 0
     if total_time[0].find(':') == -1:
         time = int(total_time[0]) * 60000
-        print(1)
     else:
         time = total_time[0].split(':')
         time = (int(time[0]) * 3600000) + (int(time[1]) * 60000)
-        print(2)
 
     topic_total_marks_time = {
         'topic': topic[0].strip(),
@@ -92,9 +90,7 @@ def erq_question(text):
 
     all_erq = []
     question_no = 2
-    # for question_no in range(2, len(erq)):
     while question_no < len(erq):
-        print(question_no, 2)
         if question_no == len(erq) - 1:
             if erq[question_no].find('Topic: ') == -1:
                 all_erq.append(erq[question_no])
@@ -105,7 +101,6 @@ def erq_question(text):
             erq[question_no] = erq[question_no] + erq[question_no + 1]
             all_erq.append(erq[question_no])
             question_no += 1
-            print(question_no, 1)
         else:
             all_erq.append(erq[question_no])
         question_no += 1

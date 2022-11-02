@@ -13,9 +13,11 @@ def topic_marks_time(text):
     time = 0
     if total_time[0].find(':') == -1:
         time = int(total_time[0]) * 60000
+        print(1)
     else:
         time = total_time[0].split(':')
         time = (int(time[0]) * 3600000) + (int(time[1]) * 60000)
+        print(2)
 
     topic_total_marks_time = {
         'topic': topic[0].strip(),
